@@ -117,44 +117,6 @@ class Songbook:
         return True
 
 
-# def sort_by_name(row):
-#     name_pinyin = lazy_pinyin(row[0])
-#     title = [name.title() for name in name_pinyin]
-#     return [lazy_pinyin(title), theory.key_order(row[1])]
-#
-#
-# def sort_by_key(row):
-#     return [lazy_pinyin(row[0].split(" ")), theory.key_order(row[1])][::-1]
-#
-#
-# def load_songs(data_source: str) -> tablib.Dataset:
-#     return tablib.Dataset().load(open(data_source, "r", encoding="utf-8").read())
-#
-#
-# def sort_songs(songs: tablib.Dataset, key) -> tablib.Dataset:
-#     songs.append_col(key, "pinyin")
-#     songs = songs.sort("pinyin")
-#     del songs["pinyin"]
-#     return songs
-
-
-# def dump_songs(songs: tablib.Dataset, target_file: str) -> bool:
-#     with open(target_file, "w", encoding="utf-8") as file:
-#         file.write(songs.export("csv"))
-#     return True
-
-
-# def get_local_songs(path: str) -> dict:
-#     local_songs = {}
-#     path = Path(path)
-#     for file in path.iterdir():
-#         name, ext = file.name.split(".")
-#         if name == "":
-#             continue
-#         local_songs[name] = ext
-#     return local_songs
-
-
 def add_sheet_ext(row):
     local_songs = get_local_songs("/Users/kip/Documents/LEGO/Lego Songbook")
     return local_songs.get(row[0], "")
