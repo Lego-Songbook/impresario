@@ -1,6 +1,7 @@
 from datetime import date
 
 import pytest
+
 from impresario.service import Service
 
 SERVICE_YAML = """- date: 2019-09-22

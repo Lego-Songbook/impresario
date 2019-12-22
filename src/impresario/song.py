@@ -51,16 +51,35 @@ class Songbook:
     _sort_by: str = "name"
 
     def __attrs_post_init__(self):
-        if self._sort_by == "name":
-            key = self._sort_by_name
-        elif self._sort_by == "key":
-            key = self._sort_by_key
-        else:
-            raise ValueError("Can only sort by names or keys.")
-        self._data.append_col(key, "sort_col")
-        self._data = self._data.sort("sort_col")
-        del self._data["sort_col"]
+        self.sort(by=self._sort_by)
+        # if self._sort_by == "name":
+        #     key = self._sort_by_name
+        # elif self._sort_by == "key":
+        #     key = self._sort_by_key
+        # else:
+        #     raise ValueError("Can only sort by names or keys.")
+        # self._data.append_col(key, "sort_col")
+        # self._data = self._data.sort("sort_col")
+        # del self._data["sort_col"]
         return True
+
+    @staticmethod
+    def _sort_by_name(row):
+        name_pinyin = lazy_pinyin(row[0].split(" "))
+        title = [name.title() for name in name_pinyin]
+        return [lazy_pinyin(title), theory.key_order(row[1])]
+
+    @staticmethod
+    def _sort_by_key(row):
+        return [lazy_pinyin(row[0].split(" ")), theory.key_order(row[1])][::-1]
+
+    @property
+    def songs(self) -> List[Song]:
+        """Get the songs in the songbook."""
+        songs_list = []
+        for song in self._data.dict:
+            songs_list.append(Song.from_dict(**song))
+        return songs_list
 
     @classmethod
     def from_file(cls, data_source) -> "Songbook":
@@ -87,25 +106,15 @@ class Songbook:
 
         return cls(data)
 
-    @staticmethod
-    def _sort_by_name(row):
-        name_pinyin = lazy_pinyin(row[0].split(" "))
-        title = [name.title() for name in name_pinyin]
-        return [lazy_pinyin(title), theory.key_order(row[1])]
-
-    @staticmethod
-    def _sort_by_key(row):
-        return [lazy_pinyin(row[0].split(" ")), theory.key_order(row[1])][::-1]
-
     def sort(self, by: str) -> bool:
         """Add a dynamic column to the data, and sort the column by ``key`` function."""
         if by == "name":
-            key = self._sort_by_name
+            key_func = self._sort_by_name
         elif by == "key":
-            key = self._sort_by_key
+            key_func = self._sort_by_key
         else:
             raise ValueError("Can only sort by names or keys.")
-        self._data.append_col(key, "sort_col")
+        self._data.append_col(key_func, "sort_col")
         self._data = self._data.sort("sort_col")
         del self._data["sort_col"]
         return True
@@ -116,17 +125,42 @@ class Songbook:
         target_file.write_text(self._data.csv, "utf-8")
         return True
 
+    def merge(self, other: "Songbook", update=True, ignore_empty=True) -> bool:
+        """Synchronize this songbook with another songbook.
 
-def add_sheet_ext(row):
-    local_songs = get_local_songs("/Users/kip/Documents/LEGO/Lego Songbook")
-    return local_songs.get(row[0], "")
+        If ``update`` is ``True``, then keep the name form ``self`` and
+        updates the information from ``other``, if it is not null.
+        """
+        if not isinstance(other, Songbook):
+            raise TypeError(f"Cannot merge a `Songbook` with a(n) {type(other)}.")
+        if self._data.headers != self._data.headers:
+            raise ValueError("Two songbooks' headers must match in order to merge.")
+
+        for row in other._data.dict:
+            if row["name"] in self._data["name"] and update:
+                ...
+            elif row["name"] in self._data["name"] and not update:
+                ...
+            else:
+                ...
+        self._data = self._data.stack(other._data)  # Hacky. Dataset().dict returns a
+        # list
+        # of ordered dicts, which does not quite work in this case.
+        self._data.remove_duplicates()
+        self.sort(by=self._sort_by)
+        return True
 
 
-def change_sheet_to_ext(songs: tablib.Dataset, path: str) -> tablib.Dataset:
-    local_songs = get_local_songs(path)
-    songs.append_col(add_sheet_ext, "sheet_type")
-    del songs["sheet_type"]
-    return songs
+# def add_sheet_ext(row):
+#     local_songs = get_local_songs("/Users/kip/Documents/LEGO/Lego Songbook")
+#     return local_songs.get(row[0], "")
+#
+#
+# def change_sheet_to_ext(songs: tablib.Dataset, path: str) -> tablib.Dataset:
+#     local_songs = get_local_songs(path)
+#     songs.append_col(add_sheet_ext, "sheet_type")
+#     del songs["sheet_type"]
+#     return songs
 
 
 def sync_local_songs(songs: tablib.Dataset, path: str) -> tablib.Dataset:
