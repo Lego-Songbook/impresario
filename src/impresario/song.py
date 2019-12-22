@@ -1,10 +1,9 @@
-from collections import defaultdict
 from pathlib import Path
-from typing import List, Sequence
+from typing import List
 
 import attr
 import tablib
-from pypinyin import lazy_pinyin, load_single_dict, style
+from pypinyin import lazy_pinyin
 
 from . import theory
 
@@ -163,24 +162,24 @@ class Songbook:
 #     return songs
 
 
-def sync_local_songs(songs: tablib.Dataset, path: str) -> tablib.Dataset:
-    local_songs = get_local_songs(path)
-    for local_song, ext in local_songs.items():
-        if local_song not in songs["name"]:
-            songs.append([local_song, "", "--", ext])
-    return songs
+# def sync_local_songs(songs: tablib.Dataset, path: str) -> tablib.Dataset:
+#     local_songs = get_local_songs(path)
+#     for local_song, ext in local_songs.items():
+#         if local_song not in songs["name"]:
+#             songs.append([local_song, "", "--", ext])
+#     return songs
 
 
-if __name__ == "__main__":
-    SONGS_CSV = Path(SITE_DIR) / "_data/songs.csv"
-    SONGS_BY_KEY_CSV = Path(SITE_DIR) / "_data/songs_by_key.csv"
-    SONGBOOK_DIR = "/Users/kip/Documents/LEGO/Lego Songbook"
-    # dump_songs(sort_songs_by_pinyin(load_songs(SONGS_CSV)), SONGS_BY_KEY_CSV)
-    # print(key_order(key_conversion("G#m")))
-    # print(get_local_songs("/Users/kip/Documents/LEGO/Lego Songbook"))
-    # print(change_sheet_to_ext(load_songs(SONGS_CSV), SONGBOOK_DIR))
-    # dump_songs(sort_songs(sync_local_songs(load_songs(SONGS_CSV), SONGBOOK_DIR),
-    #                       sort_by_name),
-    #            SONGS_CSV)
-    # dump_songs(sort_songs(load_songs(SONGS_CSV), sort_by_key), SONGS_BY_KEY_CSV)
-    pass
+# if __name__ == "__main__":
+#     SONGS_CSV = Path(SITE_DIR) / "_data/songs.csv"
+#     SONGS_BY_KEY_CSV = Path(SITE_DIR) / "_data/songs_by_key.csv"
+#     SONGBOOK_DIR = "/Users/kip/Documents/LEGO/Lego Songbook"
+#     # dump_songs(sort_songs_by_pinyin(load_songs(SONGS_CSV)), SONGS_BY_KEY_CSV)
+#     # print(key_order(key_conversion("G#m")))
+#     # print(get_local_songs("/Users/kip/Documents/LEGO/Lego Songbook"))
+#     # print(change_sheet_to_ext(load_songs(SONGS_CSV), SONGBOOK_DIR))
+#     # dump_songs(sort_songs(sync_local_songs(load_songs(SONGS_CSV), SONGBOOK_DIR),
+#     #                       sort_by_name),
+#     #            SONGS_CSV)
+#     # dump_songs(sort_songs(load_songs(SONGS_CSV), sort_by_key), SONGS_BY_KEY_CSV)
+#     pass
