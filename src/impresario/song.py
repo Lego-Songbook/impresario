@@ -168,16 +168,39 @@ class Songbook:
         new_book.sort(by=new_book._sort_by)
         return new_book
 
+    def show_missing(self, column: str) -> List[str]:
+        names_with_missing_data = []
+        for name, check in zip(self._dataset["name"], self._dataset[column]):
+            if not check:
+                names_with_missing_data.append(name)
+        return names_with_missing_data
+
+
+def sync_songbook(site_dir: str, sheet_music_dir: str) -> bool:
+    site_data = Path(site_dir)
+    songs_csv = site_data / "_data/songs.csv"
+    songs_by_key_csv = site_data / "_data/songs_by_key.csv"
+    sheet_music = Path(sheet_music_dir)
+
+    songbook = Songbook.from_file(songs_csv)
+    songbook_sheets = Songbook.from_sheets(sheet_music)
+    merged_songbook = songbook.merge(songbook_sheets)
+    merged_songbook.export(songs_csv, sort_by="name")
+    merged_songbook.export(songs_by_key_csv, sort_by="key")
+
+    return True
+
+
+def show_missing_songs(site_dir: str, column: str) -> List[str]:
+    songbook = Songbook.from_file(Path(site_dir) / "_data/songs.csv")
+    return songbook.show_missing(column)
+
 
 if __name__ == "__main__":
     SITE_DIR = "/Users/kip/projects/lego-songbook"
-    SONGS_CSV = Path(SITE_DIR) / "_data/songs.csv"
-    SONGS_BY_KEY_CSV = Path(SITE_DIR) / "_data/songs_by_key.csv"
     SONGBOOK_DIR = "/Users/kip/Documents/LEGO/Lego Songbook"
 
-    songbook = Songbook.from_file(SONGS_CSV)
-    songbook_sheets = Songbook.from_sheets(SONGBOOK_DIR)
-    merged_songbook = songbook.merge(songbook_sheets)
-    merged_songbook.sort("name")
-    merged_songbook.export(SONGS_CSV, sort_by="name")
-    merged_songbook.export(SONGS_BY_KEY_CSV, sort_by="key")
+    # sync_songbook(SITE_DIR, SONGBOOK_DIR)
+    # songbook = Songbook.from_file(Path(SITE_DIR) / "_data/songs.csv")
+    # print(songbook.show_missing("sheet_type"))
+    # print(show_missing_songs(SITE_DIR, "key"))

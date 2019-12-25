@@ -47,7 +47,7 @@ toml = ">=0.9.4"
 d = ["aiohttp (>=3.3.2)"]
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Composable command line interface toolkit"
 name = "click"
 optional = false
@@ -368,7 +368,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "de8a76c4287cefda9cbc5b834fef36f0c1c00247c89061066088d4fe9f3c0381"
+content-hash = "21a20edfe54821dbd00e93004daeae9046b0df96342d35d1efbac20ec69825fa"
 python-versions = "^3.7"
 
 [metadata.hashes]
