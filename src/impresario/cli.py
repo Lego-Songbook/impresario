@@ -1,6 +1,13 @@
+"""
+Command-line interface.
+
+$ impresario
+"""
+
 import click
 
 from impresario import song
+from impresario.config import Config
 
 
 @click.group()
@@ -9,12 +16,36 @@ def main():
 
 
 @click.group()
+@click.option("--site", prompt=True)
+@click.option("--sheets", prompt=True)
+def init(site, sheets):
+    """Initialize impresario."""
+    Config(site=site, sheets=sheets)
+    click.echo("The app is properly configured.")
+
+
+@click.group()
 def songbook():
+    # configs = Config.load()
+    pass
+
+@click.group()
+def setlist():
     pass
 
 
 @click.group()
-def setlist():
+def new():
+    pass
+
+
+@new.command("setlist")
+def _new_setlist():
+    pass
+
+
+@new.command("song")
+def _new_song():
     pass
 
 
@@ -40,3 +71,5 @@ def _songbook_show_missing(site, column):
 
 main.add_command(songbook)
 main.add_command(setlist)
+main.add_command(new)
+main.add_command(init)
